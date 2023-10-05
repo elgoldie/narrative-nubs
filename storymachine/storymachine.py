@@ -2,6 +2,7 @@
 import wordbank
 import random
 from enum import Enum
+import sys
 class Case(Enum):
     NOMINATIVE = 0
     ACCUSATIVE = 1
@@ -130,7 +131,7 @@ def PronounProcessing(pronounClass):
 
 class Article:
     def __init__(self, base, plural) -> None:
-        self.base = base # true if definite article, false if indefinite
+        self.base = base 
         self.plural = plural # true if plural, false if singular
         self.opener = True
         self.closer = False
@@ -171,7 +172,6 @@ for i in wordbank.assignedproperNouns:
         correctedGender = Gender.NEUTER
     j = [i[0],correctedGender,i[2]]
     editedPropernouns.append(j)
-print(editedPropernouns)
         
 
 def ProperNounChoosing(wordAttributeList):
@@ -208,7 +208,6 @@ classWordbankEquivalence = {Masculine: wordbank.malea,
                             ItIts: wordbank.neuterPronouns,
                             TheyThem: wordbank.pluralPronouns
                             }
-print(classWordbankEquivalence)
 
 def WordChoosing(Class):
     wordList = classWordbankEquivalence[Class]
@@ -221,224 +220,213 @@ classSubclassEquivalence = {Noun:[Masculine,Feminine,NeuterA,NeuterAn,Plural],
                             Verb: [IntransSing,IntransPlur,TransSing,TransPlur],
                             Article: [SingArt,PlurArt],
                             Pronoun: [HeHim,SheHer,TheyThem,ItIts]}
-sentenceContinue = True
-sentenceCounter = 0
+
+sentenceCount = int(sys.argv[1])
+
+fullText = ""
+
+for iteration in range(sentenceCount):
+
+    sentenceContinue = True
+    sentenceLength = 0
 
 
 
-sentence = []
-nounPresent = False
-verbPresent = False
-permitEnd = False
+    sentence = []
+    nounPresent = False
+    verbPresent = False
+    permitEnd = False
 
-for pronounType in classSubclassEquivalence[Pronoun]:
-    PronounProcessing(pronounType)
+    for pronounType in classSubclassEquivalence[Pronoun]:
+        PronounProcessing(pronounType)
 
-# First Word
-wordClass = random.choice(openers)
-print(wordClass)
-word = WordChoosing(wordClass)
-if type(word) == list:
-    classedWord = ProperNounChoosing(word)
-else:
-    classedWord = wordClass(word)
-print(classedWord)
+    # First Word
+    wordClass = random.choice(openers)
+    word = WordChoosing(wordClass)
+    if type(word) == list:
+        classedWord = ProperNounChoosing(word)
+    else:
+        classedWord = wordClass(word)
 
-sentence.append(classedWord)
+    sentence.append(classedWord)
 
 
-print("\n First word complete \n")
-### subsequent words
+    ### subsequent words
 
-### determining valid classes
+    ### determining valid classes
 
 
 
 
-while sentenceContinue:
-    sentenceCounter += 1
-    print(sentenceCounter)
-    print(sentenceContinue)
+    while sentenceContinue:
+        sentenceLength += 1
 
-    validClasses = [Noun,Verb,Article, Adverb, Preposition] # pronouns are giving me a nightmare so i am: simply ignoring them for the time being
+        validClasses = [Noun,Verb,Article, Adverb, Preposition] # pronouns are giving me a nightmare so i am: simply ignoring them for the time being
 
 
-    finalWord = sentence[-1]
-    print(finalWord)
-    print(type(finalWord))
-    
-    
-    if type(finalWord) in [HeHim,SheHer,TheyThem,ItIts]:
-        if finalWord.case == Case.NOMINATIVE:
+        finalWord = sentence[-1]
+        
+        
+        if type(finalWord) in [HeHim,SheHer,TheyThem,ItIts]:
+            if finalWord.case == Case.NOMINATIVE:
+                validClasses.remove(Noun)
+                validClasses.remove(Article)
+                #validClasses.remove(Pronoun)
+            elif finalWord.case == Case.ACCUSATIVE:
+                validClasses.remove(Article)
+                #validClasses.remove(Pronoun)
+                validClasses.remove(Verb)
+        elif type(finalWord) in [Noun,Masculine,Feminine,NeuterA,NeuterAn,Plural,ProperNoun]:
             validClasses.remove(Noun)
             validClasses.remove(Article)
+            validClasses.remove(Preposition)
             #validClasses.remove(Pronoun)
-        elif finalWord.case == Case.ACCUSATIVE:
-            validClasses.remove(Article)
+        elif type(finalWord) in [IntransSing,IntransPlur,TransSing,TransPlur]:
+            validClasses.remove(Verb)
+        elif type(finalWord) in [Article,SingArt,PlurArt]:
             #validClasses.remove(Pronoun)
-            validClasses.remove(Verb)
-    elif type(finalWord) in [Noun,Masculine,Feminine,NeuterA,NeuterAn,Plural,ProperNoun]:
-        validClasses.remove(Noun)
-        validClasses.remove(Article)
-        validClasses.remove(Preposition)
-        #validClasses.remove(Pronoun)
-        print("Noun identified")
-    elif type(finalWord) in [IntransSing,IntransPlur,TransSing,TransPlur]:
-        validClasses.remove(Verb)
-        print("Verb identified")
-    elif type(finalWord) in [Article,SingArt,PlurArt]:
-        #validClasses.remove(Pronoun)
-        validClasses.remove(Article)
-        validClasses.remove(Verb)
-        validClasses.remove(Adverb)
-        validClasses.remove(Preposition)
-        print("Article identified")
-    elif type(finalWord) == Preposition:
-        validClasses.remove(Verb)
-        validClasses.remove(Preposition)
-        validClasses.remove(Adverb)
-    elif type(finalWord) == Adverb:
-        validClasses.remove(Adverb)
-
-
-
-    # prevents more than one verb in a sentence and more than one article before a verb
-    for i in sentence:
-        if type(i) in [Noun,Masculine,Feminine,NeuterA,NeuterAn,Plural,ProperNoun,Pronoun,HeHim,SheHer,ItIts,TheyThem]:
-            nounPresent = True
-        elif type(i) in [Verb,IntransSing,IntransPlur,TransSing,TransPlur]:
-            verbPresent = True
-        if type(i) in [IntransSing,IntransPlur,TransSing,TransPlur] and Verb in validClasses:
-            validClasses.remove(Verb)
-        elif nounPresent == False and Verb in validClasses:
-            validClasses.remove(Verb)
-        if verbPresent == False and Article in validClasses:
             validClasses.remove(Article)
-
-    nounClasses = [Masculine,Feminine,NeuterA,NeuterAn,Plural]
-    verbClasses = [IntransSing,IntransPlur,TransSing,TransPlur]
-    articleClasses = [SingArt,PlurArt]
-    pronounClasses = [HeHim,SheHer,TheyThem,ItIts]
-
-    singularClasses = [Masculine,Feminine,NeuterA,NeuterAn,IntransSing,TransSing,SingArt] # add pronouns here!
-    pluralClasses = [Plural,IntransPlur, TransPlur,PlurArt] # once again add pronouns
-
-
-
+            validClasses.remove(Verb)
+            validClasses.remove(Adverb)
+            validClasses.remove(Preposition)
+        elif type(finalWord) == Preposition:
+            validClasses.remove(Verb)
+            validClasses.remove(Preposition)
+            validClasses.remove(Adverb)
+        elif type(finalWord) == Adverb:
+            validClasses.remove(Adverb)
 
 
-    # converting into subclasses
 
-    print(validClasses)
-    for classKey in classSubclassEquivalence:
-        if classKey in validClasses:
-            validClasses.remove(classKey)
-            validClasses.extend(classSubclassEquivalence[classKey])
+        # prevents more than one verb in a sentence and more than one article before a verb
+        for i in sentence:
+            if type(i) in [Noun,Masculine,Feminine,NeuterA,NeuterAn,Plural,ProperNoun,Pronoun,HeHim,SheHer,ItIts,TheyThem]:
+                nounPresent = True
+            elif type(i) in [Verb,IntransSing,IntransPlur,TransSing,TransPlur]:
+                verbPresent = True
+            if type(i) in [IntransSing,IntransPlur,TransSing,TransPlur] and Verb in validClasses:
+                validClasses.remove(Verb)
+            elif nounPresent == False and Verb in validClasses:
+                validClasses.remove(Verb)
+            if verbPresent == False and Article in validClasses:
+                validClasses.remove(Article)
 
-    # removing based on singular and plural
-    if type(finalWord) not in [Adverb,Preposition]:
-        if finalWord.plural == Number.SINGULAR:
-            for classKey in pluralClasses:
-                if classKey in validClasses and classKey not in articleClasses:
-                    validClasses.remove(classKey)
+        nounClasses = [Masculine,Feminine,NeuterA,NeuterAn,Plural]
+        verbClasses = [IntransSing,IntransPlur,TransSing,TransPlur]
+        articleClasses = [SingArt,PlurArt]
+        pronounClasses = [HeHim,SheHer,TheyThem,ItIts]
 
-            if finalWord.base == "a":
-                if NeuterAn in validClasses:
-                    validClasses.remove(NeuterAn)
-            elif finalWord.base == "an":
-                for classKey in singularClasses:
-                    if classKey in validClasses and classKey != NeuterAn:
+        singularClasses = [Masculine,Feminine,NeuterA,NeuterAn,IntransSing,TransSing,SingArt] # add pronouns here!
+        pluralClasses = [Plural,IntransPlur, TransPlur,PlurArt] # once again add pronouns
+
+
+
+
+
+        # converting into subclasses
+
+        for classKey in classSubclassEquivalence:
+            if classKey in validClasses:
+                validClasses.remove(classKey)
+                validClasses.extend(classSubclassEquivalence[classKey])
+
+        # removing based on singular and plural
+        if type(finalWord) not in [Adverb,Preposition]:
+            if finalWord.plural == Number.SINGULAR:
+                for classKey in pluralClasses:
+                    if classKey in validClasses and classKey not in articleClasses:
                         validClasses.remove(classKey)
 
+                if finalWord.base == "a":
+                    if NeuterAn in validClasses:
+                        validClasses.remove(NeuterAn)
+                elif finalWord.base == "an":
+                    for classKey in singularClasses:
+                        if classKey in validClasses and classKey != NeuterAn:
+                            validClasses.remove(classKey)
 
-        else:
+
+            else:
+                for classKey in singularClasses:
+                    if classKey in validClasses and classKey not in articleClasses:
+                        validClasses.remove(classKey)
+        if type(finalWord) in [Adverb,Preposition]:
+            for classKey in singularClasses:
+                if classKey in validClasses and classKey not in [ProperNoun, SingArt]:
+                    validClasses.remove(classKey)
+        
+        # <NEED TO FIX TO LOGIC>
+        
+        """
+        if type(finalWord) in [HeHim,SheHer,TheyThem,ItIts]:
+            if finalWord.case == Case.ACCUSATIVE:
+                if ProperNoun in validClasses:
+                    validClasses.remove(ProperNoun)
+        """
+        # removing based on gender (WILL HAPPEN ONCE PRONOUNS IMPLEMENTED)
+
+
+        # verb stuff
+
+        # general verb removage
+
+        if type(finalWord) in [IntransSing,IntransPlur,TransSing,TransPlur]:
             for classKey in singularClasses:
                 if classKey in validClasses and classKey not in articleClasses:
                     validClasses.remove(classKey)
-    if type(finalWord) in [Adverb,Preposition]:
-        for classKey in singularClasses:
-            if classKey in validClasses and classKey not in [ProperNoun, SingArt]:
-                validClasses.remove(classKey)
-    
-    # <NEED TO FIX TO LOGIC>
-    
-    """
-    if type(finalWord) in [HeHim,SheHer,TheyThem,ItIts]:
-        if finalWord.case == Case.ACCUSATIVE:
-            if ProperNoun in validClasses:
-                validClasses.remove(ProperNoun)
-    """
-    # removing based on gender (WILL HAPPEN ONCE PRONOUNS IMPLEMENTED)
+            if finalWord.transitive == Transitivity.INTRANS:
+                validClasses = []
+                # ADD BACK ADVERBS AND PREPOSITIONS
 
-
-    # verb stuff
-
-    # general verb removage
-
-    if type(finalWord) in [IntransSing,IntransPlur,TransSing,TransPlur]:
-        print(validClasses)
-        for classKey in singularClasses:
-            if classKey in validClasses and classKey not in articleClasses:
-                validClasses.remove(classKey)
-                print(validClasses)
-        if finalWord.transitive == Transitivity.INTRANS:
-            validClasses = []
-            # ADD BACK ADVERBS AND PREPOSITIONS
-        print(validClasses)
-
-    
-
-
-
-    # Based on the previous words
-    if validClasses == []:
-        print("No more word options, ending")
-        sentenceContinue = False
-        break
-    else:
-        wordClass = random.choice(validClasses)
-        print(wordClass)
-
-        word = WordChoosing(wordClass)
-        if type(word) == list:
-            classedWord = ProperNounChoosing(word)
-        else:
-            print(word)
-            classedWord = wordClass(word)
-        print(classedWord)
-
-        sentence.append(classedWord)
-
-
-
-    if type(finalWord) in [Noun,Masculine,Feminine,NeuterA,NeuterAn,Plural,ProperNoun,Pronoun,HeHim,SheHer,ItIts,TheyThem]:
-        nounPresent = True
-    elif type(finalWord) in [Verb,IntransSing,IntransPlur,TransSing,TransPlur]:
-        verbPresent = True
-
-    # Ending a sentence: if minimum requirements are in sentence and sentence[-1].closer == True, allow to end sentence
-
-    if verbPresent and type(finalWord) not in nonclosers:
-        print(finalWord.closer)
-        print("All sentence conditions met, attempting to end")
-        if random.choice([0,1]) == 1:
-            sentenceContinue == False
-            break
         
-    # additionally if no possible following words, force end sentence
+
+
+
+        # Based on the previous words
+        if validClasses == []:
+            sentenceContinue = False
+            break
+        else:
+            wordClass = random.choice(validClasses)
+
+            word = WordChoosing(wordClass)
+            if type(word) == list:
+                classedWord = ProperNounChoosing(word)
+            else:
+                classedWord = wordClass(word)
+
+            sentence.append(classedWord)
+
+
+
+        if type(finalWord) in [Noun,Masculine,Feminine,NeuterA,NeuterAn,Plural,ProperNoun,Pronoun,HeHim,SheHer,ItIts,TheyThem]:
+            nounPresent = True
+        elif type(finalWord) in [Verb,IntransSing,IntransPlur,TransSing,TransPlur]:
+            verbPresent = True
+
+        # Ending a sentence: if minimum requirements are in sentence and sentence[-1].closer == True, allow to end sentence
+
+        if verbPresent and type(finalWord) not in nonclosers:
+            if random.choice([0,1]) == 1:
+                sentenceContinue == False
+                break
+            
+        # additionally if no possible following words, force end sentence
+
+
+        sentenceString = ""
+        for i in sentence:
+            sentenceString += str(i)
+            sentenceString += " "
 
 
     sentenceString = ""
-    for i in sentence:
-        sentenceString += str(i)
-        sentenceString += " "
-    print(sentenceString)
+    sentenceString = " ".join([str(i) for i in sentence])
+    sentenceString += "."
 
-
-sentenceString = ""
-sentenceString = " ".join([str(i) for i in sentence])
-sentenceString += "."
-print(sentenceString)
+    fullText+= sentenceString
+    fullText+= " "
+print(fullText)
 
 
 
