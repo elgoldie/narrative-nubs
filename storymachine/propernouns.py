@@ -1,0 +1,5 @@
+BOYNAME = "Max"
+GIRLNAME = None
+BUMPUSNAME = None
+CATNAME = None
+DOGNAME = None

@@ -1,0 +1,66 @@
+NOUNS
+
+apple(s)
+box(es)
+boy(s) [gender: M, ]
+bumpus(es)
+cat(s) [gender: N, ]
+dog(s)
+fence(s)
+flower(s)
+girl(s) [gender: F, ]
+house(s)
+rock(s)
+store(s)
+tree(s)
+
+VERBS
+
+zot(s) - a cat zots a cat >> OUCH!! -- transitive/intransitive
+dance(s) -- intransitive
+eat(s) -- transitive/intransitive (intransitive does not have real animation.)
+go(es) -- intransitive
+hop(s) -- intransitive
+jump(s) -- intransitive
+kiss(es) -- transitive/intransitive
+run(s) -- intransitive
+sing(s) - intransitive
+walk(s) -- intransitive
+
+PRONOUNS -- seems to take more recently referenced noun/proper noun of that gender
+
+he, him, his 
+she, her
+it, its
+they, them, their
+
+PROPER NOUNS
+
+5 slots:
+
+[boy]
+[girl]
+[cat]
+[dog]
+[bumpus]
+
+ARTICLES
+
+a(n)
+the
+this
+that
+these
+those
+some (plural)
+
+ADVERBS
+
+now
+later
+sometimes
+soon
+
+PREPOSITIONS
+near (opener)
+to (not opener)
